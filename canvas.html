@@ -25,6 +25,29 @@
         (function() {
             var $cellGrid = $('#cell_grid');
             var lifegame = new lifeG.Lifegame($cellGrid.prop('width'), $cellGrid.prop('height'));
+            lifegame.updateCellGridView = 
+                function(){
+                    var canvas = $('#cell_grid')[0];
+                    if (!canvas || !canvas.getContext) {return;}
+                    var ctx = canvas.getContext('2d');
+                    var cellWidth = this.gridCanvasWidth / this.columnSize;
+                    var cellHeight = this.gridCanvasHeight / this.rowSize;
+                    ctx.beginPath();
+                    this.cellGrid.forEach(function(cell, row, column) {
+                        if (cell.isAlive) {
+                            ctx.fillStyle = 'rgb(70, 70, 255)';
+                        } else {
+                            ctx.fillStyle = 'rgb(255, 255, 255)';
+                        }
+                        ctx.fillRect(cellWidth * column, cellHeight * row, cellWidth, cellHeight);
+                        ctx.strokeStyle = 'rgb(150, 150, 150)';
+                        ctx.strokeRect(cellWidth * column, cellHeight * row, cellWidth, cellHeight);
+                    });
+                    ctx.closePath();
+                    $('#generation').text('' + this.cellGrid.getGeneration());
+                };
+            lifegame.updateCellGridView();
+
             //make it clickable
             $cellGrid.on('click', function(e) {
                 var rect = e.target.getBoundingClientRect();
