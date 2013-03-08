@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Of Life</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="lifegame.js"></script>
+    <style>
+        #cell_grid {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h3>Game Of Life</h3>
+    <input type="button" value="Start" id="start_button">
+    <input type="button" value="Stop" id="stop_button">
+    <input type="button" value="Reset" id="reset_button">
+    Generation: <span id="generation">0</span>
+    <svg id="cell_grid"></svg>
+
+    <script>
+        (function() {
+            var rowSize = 30;
+            var columnSize = 50;
+            var cellGridWidth = 700;
+            var cellGridHeight = 500;
+
+            function initializeCellGridView() {
+                var svg = document.getElementById('cell_grid');
+                var cells = '';
+                var xUnit = cellGridWidth / columnSize;
+                var yUnit = cellGridHeight / rowSize;
+                for (var row = 0; row < rowSize; row++) {
+                    for (var column = 0; column < columnSize; column++) {
+                        var x = xUnit * column;
+                        var y = yUnit * row;
+                        var width = xUnit;
+                        var height = yUnit;
+                        var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        rect.setAttribute('id', 'c' + row + '_' + column);
+                        rect.setAttribute('x', x);
+                        rect.setAttribute('y', y);
+                        rect.setAttribute('width', width);
+                        rect.setAttribute('height', height);
+                        rect.setAttribute("fill", "#ffffff");
+                        rect.setAttribute("stroke", "#aaaaaa");
+                        rect.setAttribute('data-row', row);
+                        rect.setAttribute('data-column', column);
+                        svg.appendChild(rect);
+                    }
+                }
+            }
+
+            initializeCellGridView();
+            var lifegame = new lifeG.Lifegame(rowSize, columnSize);
+
+            lifegame.updateCellGridView = function() {
+                lifegame.cellGrid.forEach(function(cell, row, column) {
+                    var rect = document.getElementById('c' + row + '_' + column);
+                    if (cell.isAlive) {
+                        rect.setAttribute("fill", "#aaaaff");
+                    } else {
+                        rect.setAttribute("fill", "#ffffff");
+                    }
+                });
+                $('#generation').text('' + lifegame.cellGrid.getGeneration());
+            };
+            lifegame.updateCellGridView();
+
+
+            //make it clickable
+            $('rect').on('click', function(e) {
+                $this = $(this);
+                var row = $this.data('row');
+                var column = $this.data('column');
+                cell = lifegame.cellGrid.getCell(row, column);
+                cell.isAlive = ! cell.isAlive;
+                lifegame.updateCellGridView();
+            });
+            $('#start_button').on('click', function() {
+                lifegame.start();
+            });
+            $('#stop_button').on('click', function() {
+                lifegame.stop();
+            });
+            $('#reset_button').on('click', function() {
+                lifegame.reset();
+            });
+        })();
+    </script>
+</body>
+</html>

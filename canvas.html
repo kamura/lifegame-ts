@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Lifegame</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="lifegame.js"></script>
+    <style>
+        #cell_grid {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h3>Game of Life</h3>
+    <input type="button" value="Start" id="start_button">
+    <input type="button" value="Stop" id="stop_button">
+    <input type="button" value="Reset" id="reset_button">
+    Generation: <span id="generation">0</span>
+    <div>
+        <canvas id="cell_grid" width="700" height="500"></canvas>
+    </div>
+
+    <script>
+        (function() {
+            var $cellGrid = $('#cell_grid');
+            var lifegame = new lifeG.Lifegame($cellGrid.prop('width'), $cellGrid.prop('height'));
+            //make it clickable
+            $cellGrid.on('click', function(e) {
+                var rect = e.target.getBoundingClientRect();
+                var x = e.clientX - rect.left;
+                var y = e.clientY - rect.top;
+                var cellWidth = lifegame.gridCanvasWidth / lifegame.columnSize;
+                var cellHeight = lifegame.gridCanvasHeight / lifegame.rowSize;
+                var row = Math.floor(y / cellHeight);
+                var column = Math.floor(x / cellWidth);
+                cell = lifegame.cellGrid.getCell(row, column);
+                cell.isAlive = ! cell.isAlive;
+                lifegame.updateCellGridView();
+            });
+            $('#start_button').on('click', function() {
+                lifegame.start();
+            });
+            $('#stop_button').on('click', function() {
+                lifegame.stop();
+            });
+            $('#reset_button').on('click', function() {
+                lifegame.reset();
+            });
+        })();
+    </script>
+</body>
+</html>
+

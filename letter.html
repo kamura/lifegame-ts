@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Of Life</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="lifegame.js"></script>
+    <style>
+        #cell_grid {
+            line-height: 100%;
+        }
+        #cell_grid {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h3>Game Of Life</h3>
+    <input type="button" value="Start" id="start_button">
+    <input type="button" value="Stop" id="stop_button">
+    <input type="button" value="Reset" id="reset_button">
+    Generation: <span id="generation">0</span>
+    <div id="cell_grid"></div>
+
+    <script>
+        (function() {
+            var rowSize = 30;
+            var columnSize = 50;
+            var ALIVE_CELL_CHAR = '■';
+            var DEAD_CELL_CHAR = '□';
+
+            function initializeCellGridView() {
+                var cells = '';
+                for (var row = 0; row < rowSize; row++) {
+                    for (var column = 0; column < columnSize; column++) {
+                        cells += '<span id="c' + row + '_' + column + '" class="cell"'
+                            + ' data-row="' + row + '" data-column="' + column + '">'
+                            + DEAD_CELL_CHAR + '</span>';
+                    }
+                    cells += '<br />';
+                }
+                $('#cell_grid').html(cells);
+            }
+
+            initializeCellGridView();
+            var lifegame = new lifeG.Lifegame(rowSize, columnSize);
+            lifegame.updateCellGridView = function() {
+                lifegame.cellGrid.forEach(function(cell, row, column) {
+                    if (cell.isAlive) {
+                        $('#c' + row + '_' + column).text(ALIVE_CELL_CHAR);
+                    } else {
+                        $('#c' + row + '_' + column).text(DEAD_CELL_CHAR);
+                    }
+                });
+                $('#generation').text('' + lifegame.cellGrid.getGeneration());
+            };
+            lifegame.updateCellGridView();
+
+
+            //make it clickable
+            $('.cell').on('click', function(e) {
+                $this = $(this);
+                var row = $this.data('row');
+                var column = $this.data('column');
+                cell = lifegame.cellGrid.getCell(row, column);
+                cell.isAlive = ! cell.isAlive;
+                lifegame.updateCellGridView();
+            });
+            $('#start_button').on('click', function() {
+                lifegame.start();
+            });
+            $('#stop_button').on('click', function() {
+                lifegame.stop();
+            });
+            $('#reset_button').on('click', function() {
+                lifegame.reset();
+            });
+        })();
+    </script>
+</body>
+</html>
